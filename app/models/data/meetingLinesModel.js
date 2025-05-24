@@ -1,8 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
-const {
-  getNowDateTime,
-  elements,
-} = require('../../core/models/functions/index');
+const { getNowDateTime, elements } = require('../../core/models/functions');
 
 const prisma = new PrismaClient();
 const model = prisma.meeting_lines;

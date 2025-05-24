@@ -5,7 +5,7 @@ require('dotenv').config();
 async function getData(param) {
   const email = process.env.INDICATA_MAIL;
   const password = process.env.INDICATA_PASSWORD;
-  let token = log_in(email, password);
+  let token = await log_in(email, password);
 
   let config = {
     method: 'POST',
@@ -17,14 +17,8 @@ async function getData(param) {
     },
     data: param,
   };
-  axios
-    .request(config)
-    .then((response) => {
-      console.log(JSON.stringify(response.data));
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  const response = await axios.request(config);
+  return response.data.payload.valuation.acv;
 }
 
 async function log_in(email, password) {
@@ -43,13 +37,7 @@ async function log_in(email, password) {
     },
     data: data,
   };
-  await axios
-    .request(config)
-    .then((response) => {
-      console.log(JSON.stringify(response.data));
-      return (token = response.data.token);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  const response = await axios(config);
+  return response.data.payload.token;
 }
+module.exports = { getData };

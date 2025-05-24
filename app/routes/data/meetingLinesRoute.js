@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-const authorize = require('../../middlewares/middleware');
+const { authorize } = require('../../middlewares/middleware');
+
 const {
   index,
   getRow,
   createData,
   removeData,
-} = require('../../controllers/defines/meetingLinesController');
+} = require('../../controllers/data/meetingLinesController');
 
 router.post('/', authorize, index);
 router.post('/getRow', authorize, getRow);

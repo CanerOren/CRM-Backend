@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const authorize = require('../../middlewares/middleware');
+const { authorize } = require('../../middlewares/middleware');
+
 const {
   index,
   getRow,

@@ -5,6 +5,8 @@ const {
   deleteData,
 } = require('../../models/data/customerRequestLinesModel');
 const { setUser } = require('../../core/controllers/functions');
+const customerRequests = require('../../models/data/customerRequestsModel');
+
 async function index(req, res) {
   try {
     var paramData = req.body;
@@ -42,6 +44,32 @@ async function createData(req, res) {
     var response = null;
     var params = req.body;
     params = setUser(params, req.user);
+    if (params.hasOwnProperty('approved')) {
+      await customerRequests.saveData({
+        id: params.id_customer_requests,
+        id_customer_request_statuses: 10,
+      });
+    } else if (params.hasOwnProperty('denied')) {
+      await customerRequests.saveData({
+        id: params.id_customer_requests,
+        id_customer_request_statuses: 11,
+      });
+    } else if (params.is_answer === null && params.is_solution === null) {
+      await customerRequests.saveData({
+        id: params.id_customer_requests,
+        id_customer_request_statuses: 7,
+      });
+    } else if (params.is_solution === true) {
+      await customerRequests.saveData({
+        id: params.id_customer_requests,
+        id_customer_request_statuses: 9,
+      });
+    } else if (params.is_answer === true) {
+      await customerRequests.saveData({
+        id: params.id_customer_requests,
+        id_customer_request_statuses: 8,
+      });
+    }
     response = await saveData(params);
     if (response) {
       status = true;

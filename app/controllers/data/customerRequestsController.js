@@ -4,7 +4,7 @@ const {
   saveData,
   deleteData,
 } = require('../../models/data/customerRequestsModel');
-
+const { setUser } = require('../../core/controllers/functions');
 async function index(req, res) {
   try {
     var paramData = req.body;
@@ -41,11 +41,7 @@ async function createData(req, res) {
     var message = null;
     var response = null;
     var params = req.body;
-    if (params.hasOwnProperty('id')) {
-      params.id_updated_by = req.user.id;
-    } else {
-      params.id_created_by = req.user.id;
-    }
+    params = setUser(params, req.user);
     response = await saveData(params);
     if (response) {
       status = true;

@@ -1,14 +1,12 @@
 const { PrismaClient } = require('@prisma/client');
-const {
-  getNowDateTime,
-  elements,
-} = require('../../core/models/functions/index');
+const { getNowDateTime, elements } = require('../../core/models/functions');
 
 const prisma = new PrismaClient();
 const model = prisma.customer_request_lines;
 const columns = [
   'title',
   'id_customer_requests',
+  'id_customer_request_lines_statuses',
   'is_answer',
   'is_solution',
   'approved_at',
@@ -27,6 +25,13 @@ async function getData(id) {
         id: true,
         title: true,
         id_customer_requests: true,
+        customer_request_lines: {
+          select: {
+            id: true,
+            id_customer_requests: true,
+          },
+        },
+        id_customer_request_lines_statuses: true,
         is_answer: true,
         is_solution: true,
         approved_at: true,
@@ -36,6 +41,11 @@ async function getData(id) {
         created_at: true,
         updated_at: true,
         deleted_at: true,
+        customer_request_statuses: {
+          select: {
+            title: true,
+          },
+        },
       },
       where: {
         id: Number(id),

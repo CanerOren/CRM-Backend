@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Müşteri Kartı</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #fff;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .field {
+            margin-bottom: 10px;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-bottom: 3px;
+            display: block;
+            font-size: 14px;
+        }
+
+        .value {
+            font-size: 15px;
+        }
+
+        .section {
+            margin-top: 25px;
+        }
+
+        .footer {
+            font-size: 12px;
+            margin-top: 30px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Müşteri Kartı</h2>
+
+    <div class="info">
+        <div class="field">
+            <span class="label">Ad Soyad</span>
+            <span class="value"><%= name %> <%= last_name %></span>
+        </div>
+        <div class="field">
+            <span class="label">Telefon</span>
+            <span class="value"><%= phone %></span>
+        </div>
+        <div class="field">
+            <span class="label">E-posta</span>
+            <span class="value"><%= email %></span>
+        </div>
+        <div class="field">
+            <span class="label">Doğum Tarihi</span>
+            <span class="value"><%= date_of_birth %></span>
+        </div>
+        <div class="field">
+            <span class="label">Şirket Adı</span>
+            <span class="value"><%= company %></span>
+        </div>
+        <div class="field">
+            <span class="label">Müşteri Tipi</span>
+            <span class="value"><%= customer_type.title %></span>
+        </div>
+        <div class="field">
+            <span class="label">Şehir</span>
+            <span class="value"><%= cities.title %></span>
+        </div>
+        <div class="field">
+            <span class="label">Semt</span>
+            <span class="value"><%= districts.title %></span>
+        </div>
+    </div>
+
+    <div class="section">
+        <span class="label">Adres</span>
+        <span class="value"><%= address %></span>
+    </div>
+
+    <div class="footer">
+        <div>Oluşturan: <%= created_by.name %> <%= created_by.lastname %>- <%= created_at %></div>
+        <div>Güncelleyen: <%= updated_by.name %> <%= updated_by.lastname %> - <%= updated_at %></div>
+    </div>
+</div>
+</body>
+</html>

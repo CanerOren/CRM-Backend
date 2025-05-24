@@ -1,0 +1,409 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+generator client {
+  provider = "prisma-client-js"
+}
+model customers {
+  id                Int       @id @default(autoincrement())
+  company           String?   @db.VarChar(150)
+  name              String?   @db.VarChar(50)
+  last_name         String?   @db.VarChar(50)
+  date_of_birth     DateTime? @db.Date
+  phone             String?   @db.VarChar(30)
+  email             String?   @db.VarChar(100)
+  id_cities         Int?
+  id_districts      Int?
+  address           String?   @db.VarChar(255)
+  id_customer_types Int?
+  id_created_by     Int?
+  id_updated_by     Int?
+  created_at        DateTime? @default(now())
+  updated_at        DateTime?
+  deleted_at        DateTime?
+
+  cities                     cities?          @relation("CustomerCity", fields: [id_cities], references: [id])
+  districts                  districts?       @relation("CustomerDistrict", fields: [id_districts], references: [id])
+  customer_type              customer_types?  @relation("CustomerType", fields: [id_customer_types], references: [id])
+  created_by                 users?           @relation("CustomerCreatedBy",fields: [id_created_by],references: [id])
+  updated_by                 users?           @relation("CustomerUpdatedBy",fields:[id_updated_by],references: [id])
+
+  meetings          meetings[]       @relation("CustomerMeetings")
+  customer_requests customer_requests[] @relation("CustomerRequests")
+}
+
+model cities {
+  id            Int         @id @default(autoincrement())
+  title         String?     @db.VarChar(50)
+  id_created_by Int?
+  id_updated_by Int?
+  created_at    DateTime?   @default(now())
+  updated_at    DateTime?
+  deleted_at    DateTime?
+
+  created_by    users?      @relation("CityCreatedBy",fields:[id_created_by],references: [id])
+  updated_by    users?      @relation("CityUpdatedBy",fields:[id_updated_by],references: [id])
+
+  customers     customers[] @relation("CustomerCity")
+  districts     districts[] @relation("CityDistricts")
+}
+
+model districts {
+  id            Int         @id @default(autoincrement())
+  title         String?     @db.VarChar(50)
+  id_cities     Int?
+  id_created_by Int?
+  id_updated_by Int?
+  created_at    DateTime?   @default(now())
+  updated_at    DateTime?
+  deleted_at    DateTime?
+
+  city                       cities?          @relation("CityDistricts", fields: [id_cities], references: [id])
+  created_by                 users?           @relation("DistrictCreatedBy",fields: [id_created_by],references: [id])
+  updated_by                 users?           @relation("DistrictUpdatedBy",fields: [id_updated_by],references: [id])
+
+  customers     customers[] @relation("CustomerDistrict")
+}
+
+model customer_types {
+  id            Int         @id @default(autoincrement())
+  title         String?     @db.VarChar(50)
+  id_created_by Int?
+  id_updated_by Int?
+  created_at    DateTime?   @default(now())
+  updated_at    DateTime?
+  deleted_at    DateTime?
+
+  created_by    users?      @relation("CustomerTypeCreatedBy",fields: [id_created_by],references: [id])
+  updated_by    users?      @relation("CustomerTypeUpdatedBy",fields: [id_updated_by],references: [id])
+
+  customers     customers[] @relation("CustomerType")
+}
+
+model customer_requests {
+  id                              Int                           @id @default(autoincrement())
+  id_customers                    Int?
+  id_customer_request_types       Int?
+  id_customer_request_subjects    Int?
+  id_customer_request_importances Int?
+  id_manager_user                 Int?
+  id_customer_request_statuses    Int?
+  notes                           String?                       @db.Text
+  id_created_by                   Int?
+  id_updated_by                   Int?
+  created_at                      DateTime?                     @default(now())
+  updated_at                      DateTime?
+  deleted_at                      DateTime?
+
+  customer                        customers?                    @relation("CustomerRequests", fields: [id_customers], references: [id])
+  request_type                    customer_request_types?       @relation("RequestType", fields: [id_customer_request_types], references: [id])
+  request_subject                 customer_request_subjects?    @relation("RequestSubject", fields: [id_customer_request_subjects], references: [id])
+  request_importance              customer_request_importances? @relation("RequestImportance", fields: [id_customer_request_importances], references: [id])
+  created_by                      users?                        @relation("CustomerRequestCreatedBy",fields: [id_created_by],references: [id])
+  updated_by                      users?                        @relation("CustomerRequestUpdatedBy",fields: [id_updated_by],references: [id])
+  manager_user                    users?                        @relation("CustomerRequestManager",fields: [id_manager_user],references: [id])
+  customer_request_statuses       customer_request_statuses?    @relation("CustomerRequestStatuses",fields: [id_customer_request_statuses],references: [id])
+
+
+  customer_request_lines         customer_request_lines[]       @relation("CustomerRequestLines")
+}
+
+model customer_request_subjects {
+  id            Int                  @id @default(autoincrement())
+  title         String?              @db.VarChar(150)
+  id_created_by Int?
+  id_updated_by Int?
+  created_at    DateTime?            @default(now())
+  updated_at    DateTime?
+  deleted_at    DateTime?
+
+  created_by    users?               @relation("CustomerRequestSubjectCreatedBy",fields: [id_created_by],references: [id])
+  updated_by    users?               @relation("CustomerRequestSubjectUpdatedBy",fields: [id_updated_by],references: [id])
+
+  requests      customer_requests[]  @relation("RequestSubject")
+}
+
+model customer_request_importances {
+  id            Int                  @id @default(autoincrement())
+  title         String?              @db.VarChar(150)
+  variant       String?              @db.VarChar(30)
+  id_created_by Int?
+  id_updated_by Int?
+  created_at    DateTime?            @default(now())
+  updated_at    DateTime?
+  deleted_at    DateTime?
+
+  created_by    users?              @relation("CustomerRequestImportancesCreatedBy",fields: [id_created_by],references: [id])
+  updated_by    users?              @relation("CustomerRequestImportancesUpdatedBy",fields: [id_updated_by],references: [id])
+
+  requests      customer_requests[]  @relation("RequestImportance")
+}
+
+model customer_request_types {
+  id            Int                  @id @default(autoincrement())
+  title         String?              @db.VarChar(150)
+  id_created_by Int?
+  id_updated_by Int?
+  created_at    DateTime?            @default(now())
+  updated_at    DateTime?
+  deleted_at    DateTime?
+
+  created_by    users?               @relation("CustomerRequestTypeCreatedBy",fields: [id_created_by],references: [id])
+  updated_by    users?               @relation("CustomerRequestTypeUpdatedBy",fields: [id_updated_by],references: [id])
+
+  requests      customer_requests[]  @relation("RequestType")
+}
+
+model meetings {
+  id                      Int       @id @default(autoincrement())
+  id_meeting_types        Int?
+  id_customers            Int?
+  id_meeting_subjects     Int?
+  id_meeting_contact_types Int?
+  id_meeting_statuses     Int?
+  id_created_by           Int?
+  id_updated_by           Int?
+  created_at              DateTime? @default(now())
+  updated_at              DateTime?
+  deleted_at              DateTime?
+
+  meeting_type     meeting_types?     @relation("CustomerMeetingTypes",fields: [id_meeting_types], references: [id])
+  customer         customers?         @relation("CustomerMeetings", fields: [id_customers], references: [id])
+  subject          meeting_subjects?  @relation("CustomerMeetingSubjects",fields: [id_meeting_subjects], references: [id])
+  contact_type     meeting_contact_types? @relation("CustomerMeetingContactTypes",fields: [id_meeting_contact_types], references: [id])
+  status           meeting_statuses?  @relation("CustomerMeetingStatuses",fields: [id_meeting_statuses], references: [id])
+  created_by       users?             @relation("MeetingCreatedBy",fields: [id_created_by],references: [id])
+  updated_by       users?             @relation("MeetingUpdatedBy",fields: [id_updated_by],references: [id])
+
+  meeting_lines    meeting_lines[]     @relation("MeetingLines")
+}
+
+model meeting_types {
+  id            Int        @id @default(autoincrement())
+  title         String?    @db.VarChar(150)
+  id_created_by Int?
+  id_updated_by Int?
+  created_at    DateTime?  @default(now())
+  updated_at    DateTime?
+  deleted_at    DateTime?
+
+  created_by    users?     @relation("MeetingTypeCreatedBy",fields: [id_created_by],references: [id])
+  updated_by    users?     @relation("MeetingTypeUpdatedBy",fields: [id_updated_by],references: [id])
+
+  meetings      meetings[] @relation("CustomerMeetingTypes")
+}
+
+model meeting_statuses {
+  id                Int            @id @default(autoincrement())
+  title             String?        @db.VarChar(150)
+  variant           String?        @db.VarChar(20)
+  status            Int?
+  id_created_by     Int?
+  id_updated_by     Int?
+  created_at        DateTime?      @default(now())
+  updated_at        DateTime?
+  deleted_at        DateTime?
+
+  created_by        users?         @relation("MeetingStatusCreatedBy",fields: [id_created_by],references: [id])
+  updated_by        users?         @relation("MeetingStatusUpdatedBy",fields: [id_updated_by],references: [id])
+
+  meetings         meetings[]      @relation("CustomerMeetingStatuses")
+  meeting_statuses meeting_lines[] @relation("MeetingStatuses")
+}
+
+model meeting_subjects {
+  id            Int        @id @default(autoincrement())
+  title         String?    @db.VarChar(150)
+  id_created_by Int?
+  id_updated_by Int?
+  created_at    DateTime?  @default(now())
+  updated_at    DateTime?
+  deleted_at    DateTime?
+
+  created_by     users?     @relation("MeetingSubjectCreatedBy",fields: [id_created_by],references: [id])
+  updated_by     users?     @relation("MeetingSubjectUpdatedBy",fields: [id_updated_by],references: [id])
+
+  meetings      meetings[] @relation("CustomerMeetingSubjects")
+}
+
+model meeting_contact_types {
+  id                     Int            @id @default(autoincrement())
+  title                 String?         @db.VarChar(150)
+  id_created_by         Int?
+  id_updated_by         Int?
+  created_at            DateTime?       @default(now())
+  updated_at            DateTime?
+  deleted_at            DateTime?
+
+  created_by            users?          @relation("MeetingContactTypeCreatedBy",fields: [id_created_by],references: [id])
+  updated_by            users?          @relation("MeetingContactTypeUpdatedBy",fields: [id_updated_by],references: [id])
+
+  meetings              meetings[]      @relation("CustomerMeetingContactTypes")
+  meeting_contact_types meeting_lines[] @relation("MeetingContactTypes")
+}
+
+model meeting_lines {
+  id                       Int                    @id @default(autoincrement())
+  title                    String?                @db.Text
+  id_meetings              Int?
+  id_meeting_contact_types Int?
+  id_meeting_statuses      Int?
+  id_created_by            Int?
+  id_updated_by            Int?
+  created_at               DateTime?              @default(now())
+  updated_at               DateTime?
+  deleted_at               DateTime?
+
+  meeting_lines            meetings?              @relation("MeetingLines",fields:[id_meetings],references: [id])
+  meeting_contact_types    meeting_contact_types? @relation("MeetingContactTypes",fields: [id_meeting_contact_types],references: [id])
+  meeting_statuses         meeting_statuses?      @relation("MeetingStatuses",fields: [id_meeting_statuses],references: [id])
+  created_by               users?                 @relation("MeetingLineCreatedBy",fields: [id_created_by],references: [id])
+  updated_by               users?                 @relation("MeetingLineUpdatedBy",fields: [id_updated_by],references: [id])
+
+}
+
+model users {
+  id            Int        @id @default(autoincrement())
+  name          String?    @db.VarChar(50)
+  lastname      String?    @db.VarChar(50)
+  phone         String?    @db.VarChar(30)
+  email         String?    @db.VarChar(50)
+  id_user_types Int?
+  id_created_by Int?
+  id_updated_by Int?
+  created_at    DateTime?  @default(now())
+  updated_at    DateTime?
+  deleted_at    DateTime?
+  password      String?    @db.VarChar(255)
+  token         String?
+  acces_token   String?
+  refresh_token String?
+  download_token String?
+
+  user_type     user_types? @relation("UserTypes",fields: [id_user_types], references: [id])
+  created_by     users?      @relation("UserCreatedBy",fields: [id_created_by],references: [id])
+  updated_by     users?      @relation("UserUpdatedBy",fields: [id_updated_by],references: [id])
+
+  created_customers                         customers[]                       @relation("CustomerCreatedBy")
+  updated_customers                         customers[]                       @relation("CustomerUpdatedBy")
+  created_cities                            cities[]                          @relation("CityCreatedBy")
+  updated_cities                            cities[]                          @relation("CityUpdatedBy")
+  created_districts                         districts[]                       @relation("DistrictCreatedBy")
+  updated_districts                         districts[]                       @relation("DistrictUpdatedBy")
+  created_customer_types                    customer_types[]                  @relation("CustomerTypeCreatedBy")
+  updated_customer_types                    customer_types[]                  @relation("CustomerTypeUpdatedBy")
+  created_customer_requests                 customer_requests[]               @relation("CustomerRequestCreatedBy")
+  updated_customer_requests                 customer_requests[]               @relation("CustomerRequestUpdatedBy")
+  created_customer_request_subjects         customer_request_subjects[]       @relation("CustomerRequestSubjectCreatedBy")
+  updated_customer_request_subjects         customer_request_subjects[]       @relation("CustomerRequestSubjectUpdatedBy")
+  created_customer_request_importances      customer_request_importances[]    @relation("CustomerRequestImportancesCreatedBy")
+  updated_customer_request_importances      customer_request_importances[]    @relation("CustomerRequestImportancesUpdatedBy")
+  craeted_customer_request_types            customer_request_types[]          @relation("CustomerRequestTypeCreatedBy")
+  updated_customer_request_types            customer_request_types[]          @relation("CustomerRequestTypeUpdatedBy")
+  craeted_meetings                          meetings[]                        @relation("MeetingCreatedBy")
+  updated_meetings                          meetings[]                        @relation("MeetingUpdatedBy")
+  created_meeting_types                     meeting_types[]                   @relation("MeetingTypeCreatedBy")
+  updated_meeting_types                     meeting_types[]                   @relation("MeetingTypeUpdatedBy")
+  creaetd_meeting_statuses                  meeting_statuses[]                @relation("MeetingStatusCreatedBy")
+  updated_meeting_statuses                  meeting_statuses[]                @relation("MeetingStatusUpdatedBy")
+  created_meeting_subjects                  meeting_subjects[]                @relation("MeetingSubjectCreatedBy")
+  updated_meeting_subjects                  meeting_subjects[]                @relation("MeetingSubjectUpdatedBy")
+  created_meeting_contact_types             meeting_contact_types[]           @relation("MeetingContactTypeCreatedBy")
+  updated_meeting_contact_types             meeting_contact_types[]           @relation("MeetingContactTypeUpdatedBy")
+  craeted_meeting_lines                     meeting_lines[]                   @relation("MeetingLineCreatedBy")
+  updated_meeting_lines                     meeting_lines[]                   @relation("MeetingLineUpdatedBy")
+  created_user_types                        user_types[]                      @relation("UserTypeCreatedBy")
+  updated_user_types                        user_types[]                      @relation("UserTypeUpdatedBy")
+  created_users                             users[]                           @relation("UserCreatedBy")
+  updated_users                             users[]                           @relation("UserUpdatedBy")
+  created_customer_request_lines            customer_request_lines[]          @relation("CustomerRequestLineCreatedBy")
+  updated_customer_request_lines            customer_request_lines[]          @relation("CustomerRequestLineUpdatedBy")
+  created_customer_request_statuses         customer_request_statuses[]       @relation("CustomerRequestStatusCreatedBy")
+  updated_customer_request_statuses            customer_request_statuses[]          @relation("CustomerRequestStatusUpdatedBy")
+  manager_user                             customer_requests[]                @relation("CustomerRequestManager")
+
+}
+
+model user_types {
+  id            Int       @id @default(autoincrement())
+  title         String?   @db.VarChar(150)
+  id_created_by Int?
+  id_updated_by Int?
+  created_at    DateTime? @default(now())
+  updated_at    DateTime?
+  deleted_at    DateTime?
+  role          String?   @db.VarChar(30)
+
+  created_by    users?    @relation("UserTypeCreatedBy",fields: [id_created_by],references: [id])
+  updated_by    users?    @relation("UserTypeUpdatedBy",fields: [id_updated_by],references: [id])
+
+  users         users[]   @relation("UserTypes")
+}
+
+model abilities{
+  id            Int       @id @default(autoincrement())
+  main_group    String?   @db.VarChar(50)
+  groups        String?   @db.VarChar(50)
+  title         String?   @db.VarChar(60)
+  subject       String?   @db.VarChar(50)
+  is_admin      Int?
+  id_created_by Int?
+  id_updated_by Int?
+  created_at    DateTime? @default(now())
+  updated_at    DateTime?
+  deleted_at    DateTime?
+
+}
+
+model user_types_abilities{
+  id            Int       @id @default(autoincrement())
+  id_user_types Int?
+  id_abilities Int?
+
+  id_created_by Int?
+  id_updated_by Int?
+  created_at    DateTime? @default(now())
+  updated_at    DateTime?
+  deleted_at    DateTime?
+
+}
+
+model customer_request_lines{
+  id                                 Int           @id @default(autoincrement())
+  title                              String?       @db.VarChar(150)
+  id_customer_requests               Int?
+  is_answer                          Boolean?
+  is_solution                        Boolean?
+  id_customer_request_lines_statuses Int?
+  approved_at                        DateTime?
+  denied_at                          DateTime?
+  id_created_by                      Int?
+  id_updated_by                      Int?
+  created_at                         DateTime?     @default(now())
+  updated_at                         DateTime?
+  deleted_at                         DateTime?
+
+  customer_request_lines            customer_requests?              @relation("CustomerRequestLines",fields:[id_customer_requests],references: [id])
+  customer_request_statuses         customer_request_statuses?      @relation("CustomerRequestLineStatuses",fields: [id_customer_request_lines_statuses],references: [id])
+  created_by                        users?                          @relation("CustomerRequestLineCreatedBy",fields: [id_created_by],references: [id])
+  updated_by                        users?                          @relation("CustomerRequestLineUpdatedBy",fields: [id_updated_by],references: [id])
+}
+
+model customer_request_statuses{
+  id                Int            @id @default(autoincrement())
+  title             String?        @db.VarChar(150)
+  variant           String?        @db.VarChar(20)
+  status            Int?
+  id_created_by     Int?
+  id_updated_by     Int?
+  created_at        DateTime?      @default(now())
+  updated_at        DateTime?
+  deleted_at        DateTime?
+
+  created_by                        users?                          @relation("CustomerRequestStatusCreatedBy",fields: [id_created_by],references: [id])
+  updated_by                        users?                          @relation("CustomerRequestStatusUpdatedBy",fields: [id_updated_by],references: [id])
+
+  customer_request_statuses         customer_requests[]             @relation("CustomerRequestStatuses")
+  customer_request_line_statuses    customer_request_lines[]        @relation("CustomerRequestLineStatuses")
+}

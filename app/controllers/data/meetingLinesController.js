@@ -3,7 +3,7 @@ const {
   getDataList,
   saveData,
   deleteData,
-} = require('../../models/defines/meetingLinesModel');
+} = require('../../models/data/meetingLinesModel');
 const meetings = require('../../models/data/meetingsModel');
 const { setUser } = require('../../core/controllers/functions');
 
