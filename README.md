@@ -135,3 +135,4 @@ Most data endpoints are `POST` and follow the pattern `/` (list), `/getRow`,
 | `npm start`   | Run with node                  |
 
 Formatting is handled by Prettier (`.prettierrc`): `npx prettier --write .`
+ 
